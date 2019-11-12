@@ -13,7 +13,9 @@
             id: Number,
             checked: Boolean,
             selectAll: Boolean,
-            checks: Array
+            checks: Array,
+            data: Object,
+            index: Number,
         },
 
         data() {
@@ -23,7 +25,7 @@
 
         computed: {
             isChecked() {
-                return this.checks.indexOf(this.id) !== -1
+                return this.checks && this.checks.indexOf(this.id) !== -1
             }
         },
 
@@ -41,13 +43,16 @@
 
         watch: {
             selectAll() {
-                if (this.selectAll) {
+                if (this.selectAll === true) {
                     this.$emit('addCheck', this.id);
-                } else {
+                } else if (this.selectAll === false) {
                     this.$emit('removeCheck', this.id);
                 }
-                // this.isChecked = this.selectAll === false || this.selectAll === true ? this.selectAll : this.isChecked
             }
+        },
+
+        mounted() {
+            this.$emit('mounted', this.id);
         }
     }
 </script>

@@ -7,6 +7,10 @@ import {t} from '../../pluginstore/src/js/filters/craft'
 import store from './js/store/adminTable'
 import App from './App'
 import AdminTablePagination from './js/components/AdminTablePagination'
+import VueAdminTable from './VueAdminTable'
+// eslint-disable-next-line
+import {ServerTable, ClientTable, Event} from 'vue-tables-2'
+import {craftTemplate} from './js/templates/craft.jsx'
 
 Vue.filter('t', t)
 
@@ -15,69 +19,135 @@ Garnish.$doc.ready(function() {
     const ADMIN_TABLE = document.querySelector('#admin-table');
     const ADMIN_TABLE_PAGINATION = document.querySelector('#admin-table-pagination');
 
-    window.adminTableApp = new Vue({
-        render: createElement => {
-            let context = {
-                props: {...ADMIN_TABLE.dataset}
-            };
+    if (ADMIN_TABLE) {
 
-            return createElement(App, context);
-        },
-        store,
+        window.adminTableApp = new Vue({
+            render: createElement => {
+                let context = {
+                    props: {...ADMIN_TABLE.dataset}
+                };
 
-        components: {
-            App,
-        },
+                return createElement(App, context);
+            },
+            store,
 
-        data() {
-            return {
+            components: {
+                App,
+            },
 
-            }
-        },
+            data() {
+                return {
 
-        computed: {
+                }
+            },
 
-        },
+            computed: {
 
-        watch: {
+            },
 
-        },
+            watch: {
 
-        methods: {
+            },
 
-        }
-    }).$mount('#admin-table')
-
-    window.adminTablePagination = new Vue({
-        render: createElement => {
-            let context = {
-                props: {...ADMIN_TABLE_PAGINATION.dataset}
-            };
-
-            return createElement(AdminTablePagination, context);
-        },
-        store,
-
-        components: {
-            AdminTablePagination,
-        },
-
-        data() {
-            return {
+            methods: {
 
             }
-        },
+        }).$mount('#admin-table')
+    }
 
-        computed: {
+    if (ADMIN_TABLE_PAGINATION) {
 
-        },
+        window.adminTablePagination = new Vue({
+            render: createElement => {
+                let context = {
+                    props: {...ADMIN_TABLE_PAGINATION.dataset}
+                };
 
-        watch: {
+                return createElement(AdminTablePagination, context);
+            },
+            store,
 
-        },
+            components: {
+                AdminTablePagination,
+            },
 
-        methods: {
+            data() {
+                return {
 
-        }
-    }).$mount('#admin-table-pagination')
+                }
+            },
+
+            computed: {
+
+            },
+
+            watch: {
+
+            },
+
+            methods: {
+
+            }
+        }).$mount('#admin-table-pagination')
+    }
+
 })
+
+// eslint-disable-next-line
+Craft.VueAdminTable = Garnish.Base.extend(
+    {
+        settings: {
+            actions: [],
+            container: '.vue-admin-table',
+            options: {
+                filterPlaceholder: Craft.t('app', 'Search'),
+                filterable: false,
+                // skin: 'data fullwidth collapsible',
+                sortable: [],
+            },
+        },
+
+        defaultColumnClasses: {
+            delete: 'thin'
+        },
+
+        init: function(settings) {
+
+            if (settings.options) {
+                settings.options = {...this.settings.options,...settings.options};
+            } else {
+                settings.options = this.settings.options;
+                settings.options.columnClasses = this.defaultColumnClasses;
+            }
+
+            this.setSettings(settings, Craft.VueAdminTable.defaults);
+
+            var dataSettings = this.settings;
+            Vue.use(ClientTable, {}, false, 'bootstrap3', craftTemplate);
+            // Vue.use(ClientTable);
+            Vue.use(ServerTable);
+
+            return new Vue({
+                components: {
+                    VueAdminTable
+                },
+                data() {
+                    return {};
+                },
+                render: (h) => {
+                    return h(VueAdminTable, {
+                        props: {
+                            settings: dataSettings
+                        }
+                    })
+                },
+            }).$mount(this.settings.container);
+        },
+
+    },
+    {
+        defaults: {
+            test: 'one'
+        }
+    }
+);

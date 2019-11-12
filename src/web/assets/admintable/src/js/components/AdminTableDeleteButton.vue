@@ -16,7 +16,8 @@
         props: {
             id: Number,
             name: String,
-            actionUrl: String
+            actionUrl: String,
+            index: Number,
         },
 
         data() {
@@ -36,9 +37,9 @@
                             'X-CSRF-Token': Craft.csrfTokenValue
                         }
                     }).then(response => {
+                          this.$emit('remove', this.index);
                         if (response.data && response.data.success !== undefined && response.data.success) {
                             Craft.cp.displayNotice(Craft.t('app', '“{name}” deleted.', {name: this.name}));
-                            this.$emit('reload');
                         }
                     });
                 }

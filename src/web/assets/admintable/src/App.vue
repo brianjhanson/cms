@@ -23,14 +23,14 @@
 
             </div>
         </div>
-        <div class="tableview" :class="{ loading: isLoading }">
+        <div v-show="!isLoading" class="tableview" :class="{ loading: isLoading }">
             <vuetable
                     ref="vuetable"
                     :per-page="resultsPerPage"
                     :css="tableCss"
                     :fields="fields"
                     :api-url="apiUrl"
-                    @vuetable:pagination-data="onPaginationData"
+
                     @vuetable:loaded="init"
             >
                 <template slot="checkbox" slot-scope="props">
@@ -182,11 +182,6 @@
                         titleClass: 'thin',
                         dataClass: 'checkbox-cell'
                     });
-                    // columns.push({
-                    //     name: '__checkbox',
-                    //     titleClass: 'checkbox-cell thin',
-                    //     dataClass: 'checkbox-cell',
-                    // });
                 }
 
                 columns = [...columns,...this.tableColumns];
@@ -223,11 +218,6 @@
 
             resultsPerPage() {
                 return this.perPage !== undefined ? JSON.parse(this.perPage) : 20;
-            },
-
-            onPaginationData (paginationData) {
-                this.$store.commit('updatePagination', paginationData);
-                return true;
             },
 
             tableCss() {
